@@ -38,12 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var node_fetch_1 = require("node-fetch");
 require("dotenv/config");
-console.log(process.env.USER_ID, process.env.CLIENT_ID, process.env.TOKEN);
+var LIMIT = 5;
+var OFFSET = 0;
 var getTracks = function () { return __awaiter(void 0, void 0, void 0, function () {
     var response, jsonResponse;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, (0, node_fetch_1.default)("https://api-v2.soundcloud.com/users/".concat(process.env.USER_ID, "/track_likes?client_id=").concat(process.env.CLIENT_ID, "&limit=24&offset=0&linked_partitioning=1&app_version=1653377235&app_locale=en"), {
+            case 0: return [4, (0, node_fetch_1.default)("https://api-v2.soundcloud.com/users/".concat(process.env.USER_ID, "/track_likes?client_id=").concat(process.env.CLIENT_ID, "&limit=").concat(LIMIT, "&offset=").concat(OFFSET, "&linked_partitioning=1&app_version=1653377235&app_locale=en"), {
                     headers: {
                         accept: 'application/json, text/javascript, */*; q=0.01',
                         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',

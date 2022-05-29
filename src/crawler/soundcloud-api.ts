@@ -1,10 +1,11 @@
 import fetch from 'node-fetch';
 import 'dotenv/config';
 
-console.log(process.env.USER_ID, process.env.CLIENT_ID, process.env.TOKEN);
+const LIMIT = 5;
+const OFFSET = 0;
 const getTracks = async () => {
     const response = await fetch(
-        `https://api-v2.soundcloud.com/users/${process.env.USER_ID}/track_likes?client_id=${process.env.CLIENT_ID}&limit=24&offset=0&linked_partitioning=1&app_version=1653377235&app_locale=en`,
+        `https://api-v2.soundcloud.com/users/${process.env.USER_ID}/track_likes?client_id=${process.env.CLIENT_ID}&limit=${LIMIT}&offset=${OFFSET}&linked_partitioning=1&app_version=1653377235&app_locale=en`,
         {
             headers: {
                 accept: 'application/json, text/javascript, */*; q=0.01',
