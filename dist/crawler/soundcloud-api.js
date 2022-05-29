@@ -39,6 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var node_fetch_1 = require("node-fetch");
 require("dotenv/config");
 var child_process_1 = require("child_process");
+var fs_1 = require("fs");
+var path = require("path");
 var LIMIT = 5;
 var OFFSET = 0;
 var getTracks = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -73,35 +75,59 @@ var getTracks = function () { return __awaiter(void 0, void 0, void 0, function 
         }
     });
 }); };
+var downloadedSongs = new Set();
 var downloadSongs = function (links) { return __awaiter(void 0, void 0, void 0, function () {
-    var downloadedSongs;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                downloadedSongs = new Set();
-                return [4, links.forEach(function (link) { return __awaiter(void 0, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    if (downloadedSongs.has(link)) {
-                                        return [2];
-                                    }
-                                    downloadedSongs.add(link);
-                                    return [4, (0, child_process_1.exec)("soundcloud ".concat(link))];
-                                case 1:
-                                    _a.sent();
+            case 0: return [4, links.forEach(function (link) { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (downloadedSongs.has(link)) {
                                     return [2];
-                            }
-                        });
-                    }); })];
+                                }
+                                console.log("[Downloading] ".concat(link));
+                                downloadedSongs.add(link);
+                                return [4, (0, child_process_1.execSync)("cd /media/victor/Mosaic/SoundCloud && ~/Work/soundcloud-cli-master/sc-rpi dl \"".concat(link, "\""))];
+                            case 1:
+                                _a.sent();
+                                return [2];
+                        }
+                    });
+                }); })];
             case 1:
                 _a.sent();
                 return [2];
         }
     });
 }); };
+var safeGaurdNames = function (name) {
+    if (name === void 0) { name = ""; }
+    return name.replace(/[^\w\s]/gi, '');
+};
+var checkIfSongsExists = function (list) {
+    var trackName = list === null || list === void 0 ? void 0 : list[0].track.title;
+    var lastLikeTrackName = (0, fs_1.readFileSync)(path.resolve("/home/victor/Work/crawlerscripts/lastTrack.txt")).toString();
+    var fileExists = safeGaurdNames(lastLikeTrackName) === safeGaurdNames(trackName);
+    console.log("[log] Exists: ".concat(fileExists, " Last track name: ").concat(lastLikeTrackName, ", Current: ").concat(trackName));
+    return fileExists;
+};
+var addtLastLikeToFile = function (list) { return __awaiter(void 0, void 0, void 0, function () {
+    var trackName;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                trackName = list === null || list === void 0 ? void 0 : list[0].track.title;
+                return [4, (0, fs_1.writeFileSync)(path.resolve("/home/victor/Work/crawlerscripts/lastTrack.txt"), safeGaurdNames(trackName))];
+            case 1:
+                _a.sent();
+                console.log("[log] Writing to file last like song name. Name ".concat(trackName));
+                return [2];
+        }
+    });
+}); };
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var collection, links;
+    var collection, links, songsAlreadyDownloaded;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4, getTracks()];
@@ -110,8 +136,16 @@ var downloadSongs = function (links) { return __awaiter(void 0, void 0, void 0, 
                 links = collection.map(function (track) {
                     return track.track.permalink_url;
                 });
+                songsAlreadyDownloaded = checkIfSongsExists(collection);
+                if (songsAlreadyDownloaded) {
+                    console.log('[Skipping] Latest tracks already downloaded.');
+                    return [2];
+                }
                 return [4, downloadSongs(links)];
             case 2:
+                _a.sent();
+                return [4, addtLastLikeToFile(collection)];
+            case 3:
                 _a.sent();
                 return [2];
         }
