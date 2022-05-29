@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer';
 import type { Browser, Page } from 'puppeteer';
 import { throttleFunctionExecution } from '../utils/throttler';
 import { searchDOMBreadthFirst } from '../utils/search';
+import { goToURL } from '../utils/page';
 
 // create instance -  headless
 // go to base url
@@ -13,12 +14,6 @@ import { searchDOMBreadthFirst } from '../utils/search';
 const createInstance = async (headless: boolean = true): Promise<Browser> => {
   const browser = await puppeteer.launch({ headless, devtools: true });
   return browser;
-} 
-
-const goToURL = async (page: Page, url: string) => {
-  await page.goto(url, {
-    waitUntil: 'networkidle2', timeout: 3000000
-  });
 }
 
 const task = async (browser, url) => {
