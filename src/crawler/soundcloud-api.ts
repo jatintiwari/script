@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import 'dotenv/config';
+import { exec } from 'child_process';
 
 const LIMIT = 5;
 const OFFSET = 0;
@@ -30,15 +31,21 @@ const getTracks = async () => {
     return jsonResponse;
 };
 
-// interface ITrack {
-//     track: {
-//         permalink_url: string;
-//     };
-// }
+const downloadSongs = async (links) => {
+    const downloadedSongs = new Set();
+    await links.forEach(async (link) => {
+        if (downloadedSongs.has(link)) {
+            return;
+        }
+        downloadedSongs.add(link);
+        await exec(`soundcloud ${link}`);
+    });
+};
+
 (async () => {
     const { collection } = await getTracks();
     const links = collection.map((track) => {
         return track.track.permalink_url;
     });
-    console.log({ links });
+    await downloadSongs(links);
 })();

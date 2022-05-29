@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var node_fetch_1 = require("node-fetch");
 require("dotenv/config");
+var child_process_1 = require("child_process");
 var LIMIT = 5;
 var OFFSET = 0;
 var getTracks = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -72,6 +73,33 @@ var getTracks = function () { return __awaiter(void 0, void 0, void 0, function 
         }
     });
 }); };
+var downloadSongs = function (links) { return __awaiter(void 0, void 0, void 0, function () {
+    var downloadedSongs;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                downloadedSongs = new Set();
+                return [4, links.forEach(function (link) { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (downloadedSongs.has(link)) {
+                                        return [2];
+                                    }
+                                    downloadedSongs.add(link);
+                                    return [4, (0, child_process_1.exec)("soundcloud ".concat(link))];
+                                case 1:
+                                    _a.sent();
+                                    return [2];
+                            }
+                        });
+                    }); })];
+            case 1:
+                _a.sent();
+                return [2];
+        }
+    });
+}); };
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var collection, links;
     return __generator(this, function (_a) {
@@ -82,7 +110,9 @@ var getTracks = function () { return __awaiter(void 0, void 0, void 0, function 
                 links = collection.map(function (track) {
                     return track.track.permalink_url;
                 });
-                console.log({ links: links });
+                return [4, downloadSongs(links)];
+            case 2:
+                _a.sent();
                 return [2];
         }
     });
